@@ -1,0 +1,37 @@
+import pandas as pd
+from neo4j import GraphDatabase
+
+# Neo4j connection details
+uri = "bolt://localhost:7687"
+user = "ne0j"
+password = "Bappa@143"
+
+# Connect to Neo4j
+driver = GraphDatabase.driver(uri, auth=(user, password))
+
+def load_csv_to_neo4j(dataframe):
+    with driver.session() as session:
+        for index, row in dataframe.iterrows():
+            # Extracting the values from the row without referencing column names
+            values = row.values.tolist()
+            year, industry_e, industry_c, industry_r, units, variable_code = values
+
+            # Create nodes and relationships
+            session.write_transaction(create_data_node, year, industry_e, industry_c, industry_r, units, variable_code)
+
+def create_data_node(tx, year, industry_e, industry_c, industry_r, units, variable_code):
+    query = """
+    CREATE (d:Data {year: $year, industry_e: $industry_e, industry_c: $industry_c, industry_r: $industry_r, units: $units, variable_code: $variable_code})
+    """
+    tx.run(query, year=year, industry_e=industry_e, industry_c=industry_c, industry_r=industry_r, units=units, variable_code=variable_code)
+
+# Specify the path to your CSV file
+csv_file_path = "C:\Users\SUPER\OneDrive - G.M. Kenjale Constructions Pvt. Ltd\Desktop\Pooja\sample.csv"
+# Read the CSV file into a Pandas DataFrame without specifying column names
+df = pd.read_csv(csv_file_path)
+
+# Load data from the DataFrame to Neo4j
+load_csv_to_neo4j(df)
+
+# Close the Neo4j connection
+driver.close()
