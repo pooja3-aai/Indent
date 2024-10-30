@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results for "{{ search_term }}"</title>
+</head>
+<body>
+    <h1>Matching Materials for "{{ search_term }}"</h1>
+    <ul>
+        {% for index, material in materials %}
+            <li>
+                <form action="/select" method="POST" style="display: inline;">
+                    <input type="hidden" name="selected_material" value="{{ material }}">
+                    <button type="submit">{{ index }}. {{ material }}</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
